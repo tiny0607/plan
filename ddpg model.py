@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import numpy as np
 import gym
 import time
+import matplotlib.pyplot as plt
 
 
 #####################  hyper parameters  ####################
@@ -21,7 +22,7 @@ MEMORY_CAPACITY = 10000
 BATCH_SIZE = 32
 TAU = 0.01
 RENDER = False
-ENV_NAME = 'Pendulum-v0'
+ENV_NAME = 'Pendulum-v1'
 
 ###############################  DDPG  ####################################
 
@@ -130,6 +131,11 @@ env.seed(1)
 s_dim = env.observation_space.shape[0]
 a_dim = env.action_space.shape[0]
 a_bound = env.action_space.high
+reward_curve = np.zeros(MAX_EP_STEPS)
+
+print("s_dim = ", s_dim)
+print("a_dim = ", a_dim)
+print("a_boumd = ", a_bound)
 
 ddpg = DDPG(a_dim, s_dim, a_bound)
 
@@ -156,7 +162,14 @@ for i in range(MAX_EPISODES):
         s = s_
         ep_reward += r
         if j == MAX_EP_STEPS-1:
-            print('Episode:', i, ' Reward: %i' % int(ep_reward), 'Explore: %.2f' % var, )
+            print('Episode:', i, ' Reward: %i' % int(ep_reward))
+            reward_curve[i] = int(ep_reward)
             if ep_reward > -300:RENDER = True
             break
 print('Running time: ', time.time() - t1)
+
+plt.plot(np.linspace(1, MAX_EP_STEPS, MAX_EP_STEPS), reward_curve)
+plt.title('Reward curve')
+plt.xlabel('Eposode')
+plt.ylabel('Reward')
+plt.show()
