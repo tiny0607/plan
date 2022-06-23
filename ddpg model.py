@@ -135,7 +135,7 @@ reward_curve = np.zeros(MAX_EP_STEPS)
 
 print("s_dim = ", s_dim)
 print("a_dim = ", a_dim)
-print("a_boumd = ", a_bound)
+print("a_bound = ", a_bound)
 
 ddpg = DDPG(a_dim, s_dim, a_bound)
 
