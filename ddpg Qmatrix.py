@@ -136,7 +136,7 @@ s_dim = 6
 ddpg = DDPG(a_dim, s_dim)
 
 
-var = 5  # control exploration
+var = 3  # control exploration
 for i in range(MAX_EPISODES):
 #    s = env.reset()
     location = np.array([-2707029.10975552, 4688711.95566451, 3360431.43412232])
@@ -168,7 +168,7 @@ for i in range(MAX_EPISODES):
             ddpg.learn()
 
         s = s_
-        location = location * (np.exp(rand_a))
+        #location = location * (np.exp(rand_a))
         ep_reward += r
         if j == MAX_EP_STEPS-1:
             #print('Episode:', i, ' Reward: %i' % int(ep_reward))
