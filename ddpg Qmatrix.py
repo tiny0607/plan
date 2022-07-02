@@ -12,11 +12,11 @@ MAX_EPISODES = 40
 MAX_EP_STEPS = 5
 LR_A = 0.001    # learning rate for actor
 LR_C = 0.002    # learning rate for critic
-GAMMA = 0.9     # reward discount
+GAMMA = 0.9    # reward discount
 TAU = 0.01      # soft replacement
 MEMORY_CAPACITY = 100
 BATCH_SIZE = 32
-RENDER = False
+#RENDER = False
 #ENV_NAME = 'Pendulum-v1'
 
 ###############################  DDPG  ####################################
@@ -139,14 +139,18 @@ ddpg = DDPG(a_dim, s_dim)
 var = 3  # control exploration
 for i in range(MAX_EPISODES):
 #    s = env.reset()
-    location = np.array([-2707029.10975552, 4688711.95566451, 3360431.43412232])
+    location = np.array([(-2707029.10975552, 4688711.95566451, 3360431.43412232),
+                        (-2707028.10975552, 4688711.95566451, 3360431.43412232),
+                        (-2707027.10975552, 4688711.95566451, 3360431.43412232),
+                        (-2707026.10975552, 4688711.95566451, 3360431.43412232),
+                        (-2707025.10975552, 4688711.95566451, 3360431.43412232)])
     s = np.array([-524645.254430573, 908711.849831743, 651279.822781636, 0.0, 0.0, -0.979484197226504])
-    initial_error = (((location[0] - s[0]) ** 2) + ((location[1] - s[1]) ** 2) + ((location[2] - s[2]) ** 2)) ** 0.5
+    initial_error = (((location[0][0] - s[0]) ** 2) + ((location[0][1] - s[1]) ** 2) + ((location[0][2] - s[2]) ** 2)) ** 0.5
     ep_reward = 0
     for j in range(MAX_EP_STEPS):
 #        if RENDER:
 #            env.render()
-        location_error = (((location[0] - s[0]) ** 2) + ((location[1] - s[1]) ** 2) + ((location[2] - s[2]) ** 2)) ** 0.5
+        location_error = (((location[j][0] - s[0]) ** 2) + ((location[j][1] - s[1]) ** 2) + ((location[j][2] - s[2]) ** 2)) ** 0.5
         #求得action？
         # Add exploration noise
         a = ddpg.choose_action(s)
@@ -156,7 +160,7 @@ for i in range(MAX_EPISODES):
         rand_num = np.random.randint(a_dim, size = 1)
         #print('Episode:', i, "rand_num = ", rand_num)
         rand_a = a[rand_num]
-        #print('Episode:', i, "rand_a = ", rand_a)
+        #Sprint('Episode:', i, "rand_a = ", rand_a)
         s_ = s * (np.exp(rand_a))
         #print('Episode:', i, "s_ = ", s_)
         r = -location_error
@@ -167,15 +171,14 @@ for i in range(MAX_EPISODES):
             var *= .9995    # decay the action randomness
             ddpg.learn()
 
-        s = s_
-        #location = location * (np.exp(rand_a))
         ep_reward += r
         if j == MAX_EP_STEPS-1:
             #print('Episode:', i, ' Reward: %i' % int(ep_reward))
-            print("Episode:", (i + 1), "Reward = ", ep_reward)
+            print("Episode:", (i + 1), ", Reward = ", ep_reward, ", position = ", s[0:3])
             reward_curve[i] = r
             if ep_reward > -300:RENDER = True
             break
+        s = s_
 
 print("initial_error = ", initial_error)
 plt.plot(np.linspace(1, MAX_EPISODES, MAX_EPISODES), reward_curve)
