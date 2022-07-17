@@ -182,9 +182,6 @@ for i in range(MAX_EPISODES):
         #print('Episode:', i, "s_ = ", s_)
         r = -location_error
 
-
-
-
         
         #將資料存入self.pointer = i的位置
         ddpg.store_transition(s, a, r, s_)
