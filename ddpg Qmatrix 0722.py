@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 
 #####################  hyper parameters  ####################
 
-MAX_EPISODES = 40
+MAX_EPISODES = 200
 MAX_EP_STEPS = 5
 LR_A = 0.001    # learning rate for actor
 LR_C = 0.002    # learning rate for critic
 GAMMA = 0.9    # reward discount
-TAU = 0.01      # soft replacement
+TAU = 0.01    # soft replacement
 MEMORY_CAPACITY = 100
 BATCH_SIZE = 32
 #RENDER = False
@@ -128,16 +128,19 @@ env.seed(1)
 s_dim = env.observation_space.shape[0]
 a_dim = env.action_space.shape[0]
 '''
-reward_curve = np.zeros(MAX_EPISODES)
-
-a_dim = 2
+a_dim = 3
 s_dim = 6
+
+reward_curve = np.zeros(MAX_EPISODES)
+best_reward = np.zeros(1)
+best_Q_matirx = np.zeros(s_dim)
+Q_matrix = np.zeros(s_dim)
 
 ddpg = DDPG(a_dim, s_dim)
 
 
 var = 3  # control exploration
-bound = 0.01
+bound = 0.1
 for i in range(MAX_EPISODES):
 #    s = env.reset()
     location = np.array([(-2707029.10975552, 4688711.95566451, 3360431.43412232),
@@ -178,7 +181,8 @@ for i in range(MAX_EPISODES):
         #print('Episode:', i, "rand_num = ", rand_num)
         rand_a = a[rand_num]
         #Sprint('Episode:', i, "rand_a = ", rand_a)
-        s_ = s * a[0] - 10 * a[1]
+        #s_ = s * a[0] - 10 * a[1]
+        s_ = s * (a[0] ** 2) - 10 * a[1] - a[2]
         #print('Episode:', i, "s_ = ", s_)
         r = -location_error
 
@@ -192,8 +196,14 @@ for i in range(MAX_EPISODES):
         ep_reward += r
         if j == MAX_EP_STEPS-1:
             #print('Episode:', i, ' Reward: %i' % int(ep_reward))
-            print("Episode:", (i + 1), ", Reward = ", r, ", position = ", s[0 : 3] * 1000000)
+            #print("Episode:", (i + 1), ", Reward = ", r, ", position = ", s[0 : 3] * 1000000)
             reward_curve[i] = r
+            if i == 0:
+                best_reward = r
+                best_Q_matirx = s[0:6]
+            if r >= best_reward:
+                best_reward = r
+                best_Q_matirx = s[0:6]
             if ep_reward > -300:RENDER = True
             break
         s = s_
@@ -201,6 +211,10 @@ for i in range(MAX_EPISODES):
             s_[k] = s_[k] * 1000000
 
 print("initial_error = ", initial_error)
+print("best_reward = ", best_reward, ", best_Q_matrix = ", best_Q_matirx)
+mean = np.mean(best_Q_matirx)
+Q_matrix = best_Q_matirx / mean
+print("Q_matrix = ", Q_matrix)
 plt.plot(np.linspace(1, MAX_EPISODES, MAX_EPISODES), reward_curve)
 plt.title('Reward curve')
 plt.xlabel('Episode')
