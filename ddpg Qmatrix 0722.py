@@ -190,7 +190,7 @@ for i in range(MAX_EPISODES):
         #將資料存入self.pointer = i的位置
         ddpg.store_transition(s, a, r, s_)
         if ddpg.pointer > MEMORY_CAPACITY:     # wait for the memory pool being full at first
-            var *= .9995    # decay the action randomness
+            var *= 0.999    # decay the action randomness
             ddpg.learn()
 
         ep_reward += r
