@@ -11,5 +11,3 @@ s = np.array([-524645.254430573, 908711.849831743, 651279.822781636, 0.0, 0.0, -
 
 Q_matrix = ddpg_Qmatrix(location, s)
 print(Q_matrix)
-
-

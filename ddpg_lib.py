@@ -180,12 +180,16 @@ def ddpg_Qmatrix(ini_location, ini_s):
     print("initial_error = ", initial_error)
     print("best_reward = ", best_reward, ", best_Q_matrix = ", best_Q_matirx)
     mean = np.mean(best_Q_matirx)
-    Q_matrix = best_Q_matirx / mean
-    print("Q_matrix = ", Q_matrix)
+    Q_matrix_value = best_Q_matirx / mean
+    print("Q_matrix = ", Q_matrix_value)
     plt.plot(np.linspace(1, MAX_EPISODES, MAX_EPISODES), reward_curve)
     plt.title('Reward curve')
     plt.xlabel('Episode')
     plt.ylabel('Reward')
     plt.show()
+
+    Q_matrix = np.zeros((6, 6))
+    for i in range(6):
+        Q_matrix[i][i] = Q_matrix_value[i]
 
     return Q_matrix
